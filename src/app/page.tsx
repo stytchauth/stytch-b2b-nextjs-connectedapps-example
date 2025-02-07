@@ -11,7 +11,10 @@ export default function Index() {
 
   var loginStatus;
   if (isInitialized && session) {
-    loginStatus = <div>Logged in!</div>
+    loginStatus = <div>
+      <div>Logged in!</div>
+      <div>When you're ready to begin, please click <Link href="/begin">this link</Link></div>
+    </div>
   } else {
     loginStatus = <div>
       Not logged in. Please log in first.
