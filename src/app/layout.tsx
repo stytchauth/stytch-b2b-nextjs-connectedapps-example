@@ -1,8 +1,10 @@
 'use client'
 
 import type { Metadata } from "next";
+import { useRouter } from 'next/navigation';
 import { Geist, Geist_Mono } from "next/font/google";
 import StytchProvider from '../components/StytchProvider';
+import { useStytchB2BClient, useStytchMemberSession } from '@stytch/nextjs/b2b';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,6 +22,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <StytchProvider>
       <html lang="en">
@@ -29,11 +32,44 @@ export default function RootLayout({
           content="A Stytch Connected Apps example"
         />
         <body>
-          <div className="page-container">
+          <div className="page">
             <main className="content-container">{children}</main>
           </div>
+          <footer>
+            <Logout />
+          </footer>
         </body>
       </html>
     </StytchProvider>
   );
+}
+
+const Logout = () => {
+
+  const router = useRouter();
+  const stytch = useStytchB2BClient();
+  const { session } = useStytchMemberSession();
+
+  const handleLogOut = () => {
+    if (session) {
+      stytch.session.revoke().then(() => {
+        router.replace('/');
+      });
+    }
+  };
+
+  var logoutJsx;
+  if (session) {
+    logoutJsx = <div className="logout-link" onClick={handleLogOut}>
+      Log out
+    </div>
+  } else {
+    logoutJsx = <div />
+  }
+
+  return (
+    <div>
+      {logoutJsx}
+    </div>
+  )
 }
