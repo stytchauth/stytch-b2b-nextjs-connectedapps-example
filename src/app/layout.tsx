@@ -1,6 +1,7 @@
 'use client'
 
 import type { Metadata } from "next";
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Geist, Geist_Mono } from "next/font/google";
 import StytchProvider from '../components/StytchProvider';
@@ -37,6 +38,7 @@ export default function RootLayout({
           </div>
           <footer>
             <Logout />
+            <Home />
           </footer>
         </body>
       </html>
@@ -70,6 +72,14 @@ const Logout = () => {
   return (
     <div>
       {logoutJsx}
+    </div>
+  )
+}
+
+const Home = () => {
+  return (
+    <div>
+      <Link href="/">Return to home</Link>
     </div>
   )
 }
