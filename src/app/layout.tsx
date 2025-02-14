@@ -7,6 +7,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import StytchProvider from '../components/StytchProvider';
 import { useStytchB2BClient, useStytchMemberSession } from '@stytch/nextjs/b2b';
 import "./globals.css";
+import LoginStatus from "../components/LoginStatus";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,16 +28,20 @@ export default function RootLayout({
   return (
     <StytchProvider>
       <html lang="en">
-        <title>Stytch Next.js Connected Apps Example</title>
-        <meta
-          name="description"
-          content="A Stytch Connected Apps example"
-        />
-        <body>
+        <head>
+          <title>Stytch Next.js Connected Apps Example</title>
+          <meta
+            name="description"
+            content="A Stytch Connected Apps example"
+          />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        </head>
+        <body className="grid grid-cols-2 grid-rows-2 font-display">
           <div className="page">
             <main className="content-container">{children}</main>
           </div>
           <footer>
+            <LoginStatus />
             <Logout />
             <Home />
           </footer>
@@ -62,9 +67,9 @@ const Logout = () => {
 
   var logoutJsx;
   if (session) {
-    logoutJsx = <div className="logout-link" onClick={handleLogOut}>
+    logoutJsx = <Link className="logout-link" href="/" onClick={handleLogOut}>
       Log out
-    </div>
+    </Link>
   } else {
     logoutJsx = <div />
   }
