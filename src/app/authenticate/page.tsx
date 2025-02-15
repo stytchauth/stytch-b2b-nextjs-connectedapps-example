@@ -15,6 +15,4 @@ export default function AuthenticatePage() {
       router.replace('/begin');
     }
   }, [member, isInitialized, router]);
-
-  return <Login />;
 }

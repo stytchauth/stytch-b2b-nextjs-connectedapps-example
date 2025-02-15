@@ -36,11 +36,11 @@ export default function RootLayout({
           />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         </head>
-        <body className="grid grid-cols-2 grid-rows-2 font-display">
-          <div className="page">
+        <body className="grid grid-cols-2 grid-rows-1 font-display bg-stytch-white text-stytch-nocturnal-blue ">
+          <div className="page col-span-1">
             <main className="content-container">{children}</main>
           </div>
-          <footer>
+          <footer className="col-span-1">
             <LoginStatus />
             <Logout />
             <Home />

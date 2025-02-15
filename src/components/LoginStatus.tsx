@@ -19,8 +19,9 @@ const LoginStatus = () => {
 
   var loginStatus;
   if (isInitialized && session) {
-    loginStatus = <div>
-      <div>Logged in!</div>
+    loginStatus = 
+    <div>
+      <h2>Logged in!</h2>
       <div>To begin the flow, please click <Link href="/begin">this link</Link></div>
     </div>
   } else {

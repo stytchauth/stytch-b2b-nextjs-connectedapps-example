@@ -9,11 +9,21 @@ import crypto from 'crypto';
 
 const IdpRedirectPage = (): JSX.Element => {
 
-  const [clientId, setClientId] = useState('');
-  const [redirectUri, setRedirectUri] = useState('http://localhost:3000/idp_redirect');
-  const [projectId, setProjectId] = useState('');
+  /**
+   * Initialize from local storage if present.
+   */
+  const [clientId, setClientId] = useState( () => {
+    return localStorage.getItem("client_id");
+  });
+  const [redirectUri, setRedirectUri] = useState( () => {
+    const url = new URL(window.location.href);
+    return url.origin + url.pathname
+  });
 
-
+  /**
+   * The code verifier is a bit different - it *must* have been used in the previous request
+   * to succeed at PKCE, so if it's not present that's an error
+   */
   const [codeVerifier, setCodeVerifier] = useState( () => {
     var verifier = localStorage.getItem("code_verifier")
     if (verifier === null || verifier === '') {
@@ -22,22 +32,34 @@ const IdpRedirectPage = (): JSX.Element => {
     return verifier;
   });
 
-  const code = useSearchParams().get('code');
+  const [projectId, setProjectId] = useState('');
+  const [successJsx, setSuccessJsx] = useState('');
 
-  const generateUrlString = () => {
-    var u = new URL(`https://test.mbramlage.dev.stytch.com/v1/public/${projectId}/oauth2/token`)
-    u.searchParams.append("client_id", clientId)
-    u.searchParams.append("redirect_uri", redirectUri)
-    u.searchParams.append("code", code)
-    u.searchParams.append("grant_type", "authorization_code")
-    u.searchParams.append("code_verifier", codeVerifier);
-    return u.href;
+
+
+
+
+  const prettyPrintPostInformation = () => {
+    var u = new URL(`${process.env.NEXT_PUBLIC_TEST_API_URL}/v1/public/${projectId}/oauth2/token`)
+    return <div>
+        <p>{u.href}</p>
+        <p>With POST data:</p>
+        <ul>
+          <li><code>client_id</code>: {clientId}</li>
+          <li><code>redirect_uri</code>: {redirectUri}</li>
+          <li><code>grant_type</code>: authorization_code</li>
+          <li><code>code</code>: code</li>
+          <li><code>code_verifier</code>: codeVerifier</li>
+        </ul>
+      </div>
   };
 
+  const code = useSearchParams().get('code');
+
   const renderCodeReceived = () => {
-    if (code === undefined ) {
+    if (code === undefined || code === null ) {
       return <div>
-        <p>Code not found in url :( did you go through the first step of the example app at /begin?</p>
+        <p>Code not found in url. Did you go through the first step of the example app at <Link href="/begin">/begin?</Link></p>
       </div>
     }
     return <div>
@@ -47,6 +69,9 @@ const IdpRedirectPage = (): JSX.Element => {
 
   const doTokenExchange = async (e) => {
     e.preventDefault();
+    setSuccessJsx(<div>
+      <em>Waiting for credentials...</em>
+    </div>);
     var formData = new FormData();
     formData.append('client_id', clientId);
     formData.append('redirect_uri', redirectUri);
@@ -63,6 +88,14 @@ const IdpRedirectPage = (): JSX.Element => {
     });
 
     const responseData = await response.json();
+    setSuccessJsx(<div>
+      <strong className="font-bold">Request complete!</strong>
+      <p>Status: {response.status == 200 ? "Success!" : "Failure!"} (response code {response.status})</p>
+      <p>Credentials:</p>
+      <pre>
+      {JSON.stringify(responseData, null, 2)}
+      </pre>
+    </div>);
     console.log(responseData);
   }
 
@@ -74,6 +107,7 @@ const IdpRedirectPage = (): JSX.Element => {
         <label>
           <div>Stytch Client App ID</div>
           <input name="client_id"
+            defaultValue={clientId}
             onChange={(e) => setClientId(e.target.value)}/>
         </label>
         <label>
@@ -91,7 +125,9 @@ const IdpRedirectPage = (): JSX.Element => {
         <button type="submit">Submit</button>
       </Form>
       <h2>We will make an async POST request to:</h2>
-      <p>{generateUrlString()}</p>
+      <div>{prettyPrintPostInformation()}</div>
+
+      {successJsx}
     </div>
   )
 };

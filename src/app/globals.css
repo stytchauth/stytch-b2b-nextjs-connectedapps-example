@@ -18,13 +18,51 @@
 @font-face {
   font-family: Booton;
   font-style: normal;
-  font-weight: 200 700;
-  font-display: block;
+  font-weight: 400;
   src: url("/fonts/Booton-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: Booton;
+  font-style: bold;
+  font-weight: 700;
+  src: url("/fonts/Booton-Bold.woff2") format("woff2");
 }
 
 @theme {
   --font-display: "Booton", "sans-serif"; 
+  --color-stytch-white: #FBFAF9;
+  --color-stytch-off-white: #F4EEE9;
+  --color-stytch-black: #1D1D1D;
+  --color-stytch-blue: #348CFF;
+  --color-stytch-blue-grey: #B2D6DE;
+  --color-stytch-fern: #00E0A1;
+  --color-stytch-hyper-royal: #3900EF;
+  --color-stytch-mint: #C8FDB3;
+  --color-stytch-nocturnal-blue: #060057;
+  --color-stytch-dusk: #545176;
+  --color-stytch-acid: #E6FD13;
+  --color-stytch-pop: #FF00C7;
+}
+
+a:link {
+  color: var(--color-stytch-hyper-royal);
+}
+
+a:hover {
+  color: var(--color-stytch-blue);
+}
+
+a:visited {
+  color: var(--color-stytch-nocturnal-blue);
+}
+
+.invalid-input {
+  border: 2px solid var(--color-stytch-pop);
+}
+
+.valid-input {
+  border: 1px solid var(--color-stytch-black);
 }
 
 body {
