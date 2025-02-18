@@ -65,6 +65,10 @@ a:visited {
   border: 1px solid var(--color-stytch-black);
 }
 
+nextjs-portal {
+  position: absolute;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

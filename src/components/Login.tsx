@@ -3,7 +3,6 @@
 import React from 'react';
 import { StytchB2B } from '@stytch/nextjs/b2b';
 import { discoveryConfig, discoveryStyles, organizationConfig } from '@/lib/stytchConfig';
-import './Login.css';
 
 /*
  * Login configures and renders the StytchLogin component which is a prebuilt UI component for auth powered by Stytch.
@@ -15,7 +14,7 @@ import './Login.css';
 const Login = () => {
 
   return (
-    <div className="centered-login">
+    <div className="login">
       <StytchB2B config={discoveryConfig} styles={discoveryStyles} />
     </div>
   );

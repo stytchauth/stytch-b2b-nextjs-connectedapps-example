@@ -16,7 +16,7 @@ export default function Index() {
         <p>For background information about Connected Apps, please refer to our <Link href="https://stytch.com/docs/b2b/guides/connected-apps/getting-started">getting started guide for Connected Apps</Link></p>
         <p>The flow this app will take advantage of is the Authorization Code Flow with PKCE. When configuring this app as a client app in Stytch, please select "Third Party Public" as the Client type; this will show how our user consent screen renders and enable PKCE for this app.</p>
         <p>
-          Please begin by ensuring you're logged in in the right pane.
+          Please begin by ensuring you're logged in (below). We will be using Stytch <Link href="https://stytch.com/docs/b2b/guides/magic-links/overview">Email Magic Links</Link> to log in - provide your email address below and check your email to continue. Keep in mind it may take a moment to receive the email.
         </p>
         <br />
        </div>

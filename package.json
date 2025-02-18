@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@stytch/nextjs": "^0.0.0-idp-20241219194424",
+    "@stytch/nextjs": "^0.0.0-idp-20250208002140",
     "@tailwindcss/postcss": "^4.0.6",
     "next": "15.1.6",
     "react": "^19.0.0",
