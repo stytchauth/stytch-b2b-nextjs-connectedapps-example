@@ -5,29 +5,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useMemo } from 'react';
 import crypto from 'crypto';
+import ValidatingInput from "@/components/ValidatingInput";
 
 const BeginPage = (): JSX.Element => {
 
-  const [codeChallenge, setCodeChallenge] = useState('');
-
-
-  const generateUrlString = () => {
-    var u = new URL(window.location.origin + "/idp_login")
-    u.searchParams.append("client_id", clientId)
-    u.searchParams.append("redirect_uri", redirectUri)
-    u.searchParams.append("scope", "openid profile email phone")
-    u.searchParams.append("response_type", "code")
-    u.searchParams.append("code_challenge", codeChallenge);
-    u.searchParams.append("code_challenge_method", "S256");
-    return u.href;
-  };
-
-  const prettyPrintUrlString = () => {
-    return generateUrlString().replaceAll('?', '?\n').replaceAll('&', '&\n');
-  }
+  /*** Client ID parameter ***
+   * This parameter is given in the Stytch dashboard when you create a new Connected App client.
+   */
 
   const [clientId, setClientId] = useState('');
-  const [clientIdValidClass, setClientIdValidClass] = useState("invalid-input");
   /**
    * Write the client id to local storage - we will need it for the next request.
    */
@@ -35,15 +21,30 @@ const BeginPage = (): JSX.Element => {
     setClientId(id)
     if (id === '') {
       localStorage.removeItem("client_id")
-      setClientIdValidClass("invalid-input");
       return;
     }
-    setClientIdValidClass("valid-input");
     localStorage.setItem("client_id", id)
   }
 
+  // Set a default placeholder value and save it to a variable; we consider it an error if
+  // the value does not change from the default value.
+  const clientIdDefaultValue = "(like idp-client****)"
+  const validateClientId = (id: String) =>  {
+    if (id === clientIdDefaultValue) {
+      return "Must enter in a new Client App ID";
+    }
+    if (id === '') {
+      return "Client App ID cannot be blank";
+    }
+    return true;
+  }
+
+  /**** Redirect URI parameter ***
+   * This parameter is configured on the Connected App client. It's under the heading "Login redirect URLs".
+   * The value of this field must match exactly one of the values in the in the dashboard.
+   */
+
   const [redirectUri, setRedirectUri] = useState('http://localhost:3000/idp_redirect');
-  const [redirectUriValidClass, setRedirectUriValidClass] = useState("valid-input");
   /**
    * Write the redirect_url to local storage - we will need it for the next request.
    */
@@ -51,12 +52,34 @@ const BeginPage = (): JSX.Element => {
     setRedirectUri(uri)
     if (uri === '') {
       localStorage.removeItem("redirect_uri")
-      setRedirectUriValidClass("invalid-input");
       return;
     }
-    setRedirectUriValidClass("valid-input");
     localStorage.setItem("redirect_uri", uri)
   }
+
+  const validateRedirectUri = (uri: String) => {
+    if (uri === '') {
+      return "URI cannot be blank";
+    }
+    try{
+      new URL(uri);
+    } catch (err) {
+      return "URI invalid / cannot parse";
+    }
+    return true;
+  }
+
+  /*** Code verifier and code challenge
+   * PKCE uses these values in order to ensure that each request from the client is happening
+   * from the same machine / browser in order to prevent a malicious actor from hijacking
+   * the returned code that's delivered to the Redirect URI.
+   *
+   * The code_verifier is any value between 43 and 128 bytes (recommended: a cryptographically secure
+   * random value). The code_challenge is generated from the code_verifier as a base64-encoded
+   * representation of the sha-256 hash of the code_verifier.
+   */
+
+  const [codeChallenge, setCodeChallenge] = useState('');
 
   /**
    * Generate a random value for the code verifier that is compliant with the PKCE
@@ -76,12 +99,6 @@ const BeginPage = (): JSX.Element => {
    * Initialize the code verifier state if there's no value in local storage.
    */
   const resetOrReadCodeVerifier = () => {
-    // TODO: there is some duplication of logic between here and writeCodeVerifier.
-    // writeCodeVerifier calls the state function `setCodeVerifier`, but this init
-    // function doesn't have access to that yet. Similarly, this function ignores
-    // the current value in the UI of the code_verifier, but writeCodeVerifier is
-    // run on the onChange handler of the UI to keep local storage up to date...
-    // hmm.
     var verifier = localStorage.getItem("code_verifier")
     if (verifier === null || verifier === '') {
       console.log("No verifier stored")
@@ -97,11 +114,14 @@ const BeginPage = (): JSX.Element => {
    *
    */
   const writeCodeVerifier = (verifier: String) => {
-    setCodeVerifier(verifier);
-    if (verifier === '') {
+    console.log("Verifier: " + verifier);
+    if (verifier === null || verifier === '') {
+      console.log("Verifier empty")
       localStorage.removeItem("code_verifier")
+      resetOrReadCodeVerifier();
       return;
     }
+    setCodeVerifier(verifier);
     // Store...
     localStorage.setItem("code_verifier", verifier)
     // And preemptively update the code_challenge state so it's ready to use
@@ -134,20 +154,33 @@ const BeginPage = (): JSX.Element => {
     setCodeChallenge(hashed)
   };
 
-  const validateCodeVerifierClass = () => {
-    if (codeVerifier.length < 43 || codeVerifier.length > 128) {
-      return "invalid-input";
+  const validateCodeVerifier = (verifier: String) => {
+    console.log(verifier);
+    if (verifier.length < 43 || verifier.length > 128) {
+      return "Code verifier must be between 43 and 128 bytes in length";
     }
-    return "valid-input";
+    return true;
   }
 
   const [codeVerifier, setCodeVerifier] = useState( () => {
     return resetOrReadCodeVerifier()
   });
-  const [codeVerifierValidClass, setCodeVerifierValidClass] = useState( () => {
-    return validateCodeVerifierClass()
-  });
 
+
+  const generateUrlString = () => {
+    var u = new URL(window.location.origin + "/idp_login")
+    u.searchParams.append("client_id", clientId)
+    u.searchParams.append("redirect_uri", redirectUri)
+    u.searchParams.append("scope", "openid profile email phone")
+    u.searchParams.append("response_type", "code")
+    u.searchParams.append("code_challenge", codeChallenge);
+    u.searchParams.append("code_challenge_method", "S256");
+    return u.href;
+  };
+
+  const prettyPrintUrlString = () => {
+    return generateUrlString().replaceAll('?', '?\n').replaceAll('&', '&\n');
+  }
 
   return (
     <div>
@@ -157,23 +190,24 @@ const BeginPage = (): JSX.Element => {
       <Form>
         <label>
           <div>Stytch Client App ID</div>
-          <input name="client_id"
-            className={clientIdValidClass}
-            onChange={(e) => writeClientId(e.target.value)}/>
+          <ValidatingInput name="client_id"
+            defaultValue={clientIdDefaultValue}
+            validator={validateClientId}
+            changeHandler={writeClientId} />
         </label>
         <label>
           <div>Stytch Client Redirect URI</div>
-          <input name="redirect_uri"
+          <ValidatingInput name="redirect_uri"
             defaultValue={redirectUri}
-            className={redirectUriValidClass}
-            onChange={(e) => writeRedirectUri(e.target.value)}/>
+            validator={validateRedirectUri}
+            changeHandler={writeRedirectUri} />
         </label>
         <label>
           <div>PKCE Code Verifier</div>
-          <input name="code_verifier"
+          <ValidatingInput name="code_verifier"
             defaultValue={codeVerifier}
-            className={validateCodeVerifierClass()}
-            onChange={(e) => writeCodeVerifier(e.target.value)}/>
+            validator={validateCodeVerifier}
+            changeHandler={writeCodeVerifier} />
           <h3>PKCE Code Challenge (BASE64(SHA-256(code_verifier))</h3>
           <p>{codeChallenge}</p>
         </label>

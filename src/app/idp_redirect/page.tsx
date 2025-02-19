@@ -2,40 +2,67 @@
 
 import Form from 'next/form';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
-import crypto from 'crypto';
+import { useState, useMemo } from 'react';
 
 const IdpRedirectPage = (): JSX.Element => {
 
   /**
-   * Initialize from local storage if present.
+   * Initialize these parameters from local storage or print an error.
+   * These should all either be in local storage or set in the .env.local file, so there is no additional
+   * input data for this page - it's just a follow-up request in public / PKCE apps.
    */
-  const [clientId, setClientId] = useState( () => {
-    return localStorage.getItem("client_id");
-  });
-  const [redirectUri, setRedirectUri] = useState( () => {
-    const url = new URL(window.location.href);
-    return url.origin + url.pathname
-  });
 
-  /**
-   * The code verifier is a bit different - it *must* have been used in the previous request
-   * to succeed at PKCE, so if it's not present that's an error
-   */
-  const [codeVerifier, setCodeVerifier] = useState( () => {
-    var verifier = localStorage.getItem("code_verifier")
-    if (verifier === null || verifier === '') {
-      console.error("No verifier stored - this was required to be set in the /begin page")
+  const clientId = useMemo(() => {
+    var clientId = localStorage.getItem("client_id");
+    if (!clientId) {
+      return <span className="invalid">
+        Failed to get <code>client_id</code> from local storage. Did you start at <Link href="/begin">the /begin page</Link>?
+      </span>
     }
-    return verifier;
-  });
+    return clientId
+  }, []);
 
-  const [projectId, setProjectId] = useState('');
-  const [successJsx, setSuccessJsx] = useState('');
+  const projectId = useMemo(() => {
+    var projectId = process.env.NEXT_PUBLIC_STYTCH_PROJECT_ID;
+    if (!projectId) {
+      return <span className="invalid">
+        Failed to get <code>project_id</code>; this is expected to be set in the <code>.env.local</code> file in the root of this repo. Please check there.
+      </span>
+    }
+    return projectId;
+  }, []);
+
+  const redirectURI = useMemo(() => {
+    var redirectURI = localStorage.getItem("redirect_uri");
+    if (!redirectURI) {
+      return <span className="invalid">
+        Failed to get <code>redirect_uri</code> from local storage. Did you start at <Link href="/begin">the /begin page</Link>?
+      </span>
+    }
+    return redirectURI
+  }, []);
+
+  const codeVerifier = useMemo(() => {
+    var codeVerifier = localStorage.getItem("code_verifier");
+    if (!codeVerifier) {
+      return <span className="invalid">
+        Failed to get <code>code_verifier</code> from local storage. Did you start at <Link href="/begin">the /begin page</Link>?
+      </span>
+    }
+    return codeVerifier
+  }, []);
 
 
+  const code = useSearchParams().get('code');
+  const codeInUri = useMemo(() => {
+    if (!code) {
+      return <span className="invalid">
+        Code not found in url. Did you start at <Link href="/begin">the /begin page</Link>?
+      </span>
+    }
+    return code
+  }, []);
 
 
 
@@ -46,26 +73,16 @@ const IdpRedirectPage = (): JSX.Element => {
         <p>With POST data:</p>
         <ul>
           <li><code>client_id</code>: {clientId}</li>
-          <li><code>redirect_uri</code>: {redirectUri}</li>
+          <li><code>redirect_uri</code>: {redirectURI}</li>
           <li><code>grant_type</code>: authorization_code</li>
-          <li><code>code</code>: code</li>
-          <li><code>code_verifier</code>: codeVerifier</li>
+          <li><code>code</code>: {code}</li>
+          <li><code>code_verifier</code>: {codeVerifier}</li>
         </ul>
       </div>
   };
 
-  const code = useSearchParams().get('code');
 
-  const renderCodeReceived = () => {
-    if (code === undefined || code === null ) {
-      return <div>
-        <p>Code not found in url. Did you go through the first step of the example app at <Link href="/begin">/begin?</Link></p>
-      </div>
-    }
-    return <div>
-      <p>Code is {code}</p>
-    </div>
-  }
+  const [successJsx, setSuccessJsx] = useState('');
 
   const doTokenExchange = async (e) => {
     e.preventDefault();
@@ -74,7 +91,7 @@ const IdpRedirectPage = (): JSX.Element => {
     </div>);
     var formData = new FormData();
     formData.append('client_id', clientId);
-    formData.append('redirect_uri', redirectUri);
+    formData.append('redirect_uri', redirectURI);
     formData.append('code', code);
     formData.append('grant_type', 'authorization_code');
     formData.append('code_verifier', codeVerifier);
@@ -102,31 +119,22 @@ const IdpRedirectPage = (): JSX.Element => {
   return (
     <div>
       <h1>Redirect target page</h1>
-      {renderCodeReceived()}
-      <Form onSubmit={doTokenExchange}>
-        <label>
-          <div>Stytch Client App ID</div>
-          <input name="client_id"
-            defaultValue={clientId}
-            onChange={(e) => setClientId(e.target.value)}/>
-        </label>
-        <label>
-          <div>Stytch Project ID</div>
-          <input name="project_id"
-            onChange={(e) => setProjectId(e.target.value)}/>
-        </label>
-        <label>
-          <div>Stytch Client Redirect URI</div>
-          <input name="redirect_uri"
-            defaultValue={redirectUri}
-            onChange={(e) => setRedirectUri(e.target.value)}/>
-        </label>
-        <br />
-        <button type="submit">Submit</button>
-      </Form>
+      <div>Code returned from the first step (in this page's URL):</div>
+      <code>{codeInUri}</code>
+      <br />
+      <div>Stytch Client App ID (saved from the /begin page)</div>
+      <code>{clientId}</code>
+      <div>Stytch Project ID (set in the .env.local file as NEXT_PUBLIC_STYTCH_PROJECT_ID)</div>
+      <code>{projectId}</code>
+      <div>Stytch Client Redirect URI (saved from the /begin page)</div>
+      <code>{redirectURI}</code>
+      <br />
       <h2>We will make an async POST request to:</h2>
       <div>{prettyPrintPostInformation()}</div>
 
+      <Form onSubmit={doTokenExchange}>
+        <button type="submit">Submit</button>
+      </Form>
       {successJsx}
     </div>
   )

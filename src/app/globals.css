@@ -57,12 +57,28 @@ a:visited {
   color: var(--color-stytch-nocturnal-blue);
 }
 
+input {
+  border-width: 2px solid;
+  outline-width: 2px solid;
+}
+
+input:focus {
+  border-width: 4px solid;
+  outline-width: 4px solid;
+}
+
 .invalid-input {
-  border: 2px solid var(--color-stytch-pop);
+  border-color: var(--color-stytch-pop);
+  outline-color: var(--color-stytch-pop);
 }
 
 .valid-input {
-  border: 1px solid var(--color-stytch-black);
+  border-color: var(--color-stytch-black);
+  outline-color: var(--color-stytch-black);
+}
+
+.invalid {
+  color: var(--color-stytch-pop);  
 }
 
 nextjs-portal {
