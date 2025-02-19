@@ -3,11 +3,11 @@
 A Stytch Connected App with Authorization Code Flow with PKCE.
 =======
 
-## What this is
+## What's this?
 
 This repository is an example of a Stytch Connected App&mdash;configured in Stytch as a "Public App"&mdash;and implementing both sides: this app is both the Identity Provider as well as the Relying Party that is logging in with the Identity Provider.
 
-It's intended to give some clarity on how to implement this flow and how Connected Apps work with Stytch in genreal. There are some nuances with how this flow operates (particularly with regards to how the code_verifier and code_challenge are implemented) and we hope that providing a reference will prove useful in implementing your own app!
+It's intended to give some clarity on how to implement this flow and how Connected Apps work with Stytch in general. There are some nuances with how this flow operates (particularly with regards to how the `code_verifier` and `code_challenge` are implemented to be PKCE compliant) and we hope that providing a reference will prove useful in implementing your own app!
 
 ## Getting Started
 
