@@ -1,39 +1,28 @@
 # stytch-b2b-nextjs-connectedapps-example
-An example of how to use Stytch Connected Apps with Authorization Code Flow with PKCE (Public app)
+
+An example of how to use Stytch Connected Apps with Authorization Code Flow with PKCE (in Stytch, a Public app).
 =======
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-First, run the development server:
+* Clone the repository to your local machine.
+* Copy `.env.local.template` to `.env.local` and adjust it to fit values from your own Stytch account.
+* Run the development server with `npm run dev` (or similar if using a different tool from NPM)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the landing page.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Learn more
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The descriptions on each page are intended to give you guidance for how to proceed with this app. Keep in mind that the point of this app is not only to demonstrate what a user experiences when working with this flow, but also to provide guidance in code for how to implement this flow yourself - please do look at the source files!
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+When it comes to setting up Connected Apps in Stytch, please review our [getting started guide](https://stytch.com/docs/b2b/guides/connected-apps/getting-started) for more information about their configuration!
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+This app is intended to provide a reference for other developers, and is in a early / beta release state. Please do not hesitate to [file an issue](https://github.com/stytchauth/stytch-b2b-nextjs-connectedapps-example/issues) or [create a pull request](https://github.com/stytchauth/stytch-b2b-nextjs-connectedapps-example/pulls) with improvements!
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+We're especially interested in:
+* Superficial changes: typos, the copy could be clearer, etc...
+* Structural changes: if it makes sense to you to e.g. break out a page into more sub-components, we'd love to hear it!
+* Usability changes: it's admittedly quite open for enhancements to how the app feels to use
+* Bugs: of course. If it doesn't seem to do what it should do, let us know!
