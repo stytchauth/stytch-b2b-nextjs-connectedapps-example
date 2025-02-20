@@ -1,9 +1,9 @@
 'use client';
 
-import { StytchB2BIDP } from '@stytch/nextjs/b2b';
+import { B2BIdentityProvider } from '@stytch/nextjs/b2b';
 
 const IDPPage = () => {
-  return <StytchB2BIDP />;
+  return <B2BIdentityProvider />;
 };
 
 export default IDPPage;
