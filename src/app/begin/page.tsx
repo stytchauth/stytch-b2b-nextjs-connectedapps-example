@@ -184,9 +184,12 @@ const BeginPage = (): JSX.Element => {
 
   return (
     <div>
-      <h1>Parameters required to use the <code>&lt;StytchIDP /&gt;</code> component:</h1>
-      <p>We're going to construct a URL to navigate to the page hosting the <code>&lt;StytchIDP /&gt;</code> component.</p>
+      <h1>Parameters required to use the <code>&lt;B2BIdentityProvider /&gt;</code> component:</h1>
+      <p>We're going to construct a URL to navigate to the page hosting the <code>&lt;B2BIdentityProvider /&gt;</code> component.</p>
       <p>On navigating to this page, the component will take these URL parameters and begin an OIDC login flow with PKCE.</p>
+      <p>This page, where we're constructing the URL is an analogue for a configuration page for the Client App. Generally that app will ask for these parameters, save them, and use them to construct the URL as we're showing here. </p>
+      <p>The next page, the one hosting the <code>&lt;B2BIdentityProvider /&gt;</code> component, is the page you'd want to emulate in your Stytch-powered app that is acting as the IDP. When the Client App wants to login with your app acting as the IDP, it will navigate to that page with these parameters.</p>
+      <p>Note that page owned by the Stytch-powered IDP that requires the user to be logged in or the component will raise an error. This is why you must be logged in to use this demo. (It is possible to navigate to this page when logged out and try to do this flow if you want to see what this looks like).</p>
       <Form>
         <label>
           <div>Stytch Client App ID</div>
@@ -213,7 +216,7 @@ const BeginPage = (): JSX.Element => {
         </label>
       </ Form>
 
-      <h3>URL used on page hosting <code>&lt;StytchIDP&gt;</code> component.</h3>
+      <h3>URL used on page hosting <code>&lt;B2BIdentityProvider /&gt;</code> component.</h3>
       <p>When ready, click this link:</p>
       <Link className="break-all" href={generateUrlString()}>
         <pre>
