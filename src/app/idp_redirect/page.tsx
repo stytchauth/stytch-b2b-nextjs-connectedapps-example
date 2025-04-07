@@ -96,7 +96,7 @@ const IdpRedirectPage = (): JSX.Element => {
     formData.append('grant_type', 'authorization_code');
     formData.append('code_verifier', codeVerifier);
 
-    const response = await fetch(`https://test.mbramlage.dev.stytch.com/v1/public/${projectId}/oauth2/token`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_TEST_API_URL}/v1/public/${projectId}/oauth2/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
