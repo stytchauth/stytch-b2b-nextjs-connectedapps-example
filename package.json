@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@stytch/nextjs": "^21.4.1",
+    "@stytch/nextjs": "^21.18.1",
     "@tailwindcss/postcss": "^4.0.6",
     "next": "^15.2.3",
     "react": "^19.0.0",
